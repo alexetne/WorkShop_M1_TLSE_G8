@@ -16,16 +16,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $email = $_POST['email'];
     $password = $_POST['password'];
     $ip_adresse = $_SERVER['REMOTE_ADDR']; // Adresse IP de l'utilisateur
-    $role_table = '';
+    $role_table = 'personnel'; // Tous les rôles sont désormais dans la table `personnel` ou similaire
 
-    // Vérifier dans quelle table rechercher (personnel ou medecins)
-    if ($_POST['role'] == 'personnel') {
-        $role_table = 'personnel';
-    } elseif ($_POST['role'] == 'medecins') {
-        $role_table = 'medecins';
-    }
-
-    if (!empty($email) && !empty($password) && !empty($role_table)) {
+    if (!empty($email) && !empty($password)) {
         // Requête pour récupérer les informations de l'utilisateur
         $query = "SELECT p.id, p.mail_pro, p.role, pass.password_hash, pass.compte_verrouille, pass.tentative_connexion_echouee 
                   FROM $role_table p 
@@ -60,7 +53,28 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     // Démarrer une session pour l'utilisateur
                     $_SESSION['user_id'] = $user['id'];
                     $_SESSION['role'] = $user['role'];
-                    $success_message = "Connexion réussie!";
+
+                    // Redirection en fonction du rôle
+                    switch ($user['role']) {
+                        case 'admin':
+                            header("Location: admin/index.php");
+                            exit;
+                        case 'medecin':
+                            header("Location: medecin/index.php");
+                            exit;
+                        case 'infirmier':
+                            header("Location: infirmier/index.php");
+                            exit;
+                        case 'aide-soignant':
+                            header("Location: aide-soignant/index.php");
+                            exit;
+                        case 'secretaire':
+                            header("Location: secretaire/index.php");
+                            exit;
+                        default:
+                            header("Location: autre/index.php");
+                            exit;
+                    }
                 } else {
                     // Échec de la vérification du mot de passe, incrémenter les tentatives échouées
                     $query_fail = "UPDATE password SET tentative_connexion_echouee = tentative_connexion_echouee + 1 WHERE id_personnel = :id";
@@ -116,13 +130,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <div class="form-group">
             <label for="password">Mot de passe</label>
             <input type="password" name="password" class="form-control" id="password" placeholder="Entrez votre mot de passe" required>
-        </div>
-        <div class="form-group">
-            <label for="role">Se connecter en tant que</label>
-            <select name="role" class="form-control" id="role" required>
-                <option value="personnel">Personnel</option>
-                <option value="medecins">Médecin</option>
-            </select>
         </div>
         <button type="submit" class="btn btn-primary">Se connecter</button>
     </form>

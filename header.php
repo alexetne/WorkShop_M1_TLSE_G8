@@ -10,7 +10,7 @@
   <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 
   <!-- Custom CSS -->
-  <link href="style.css" rel="stylesheet">
+  <link href="/style.css" rel="stylesheet">
 
   <!-- Fonts and Icons (optional) -->
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
