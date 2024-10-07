@@ -55,3 +55,29 @@
     border-radius: 8px;
   }
   
+  .footer {
+    background-color: var(--primary-medium);
+    color: #ffffff;
+    padding: 20px 0;
+  }
+
+  .footer .text-muted {
+    color: #ffffff !important;
+  }
+  
+  .footer a {
+    color: #ffffff;
+    text-decoration: none;
+  }
+  
+  .footer a:hover {
+    color: var(--primary-light);
+  }
+  
+  .footer .list-inline {
+    margin-top: 10px;
+  }
+  
+  .footer .list-inline-item {
+    margin: 0 10px;
+  }
