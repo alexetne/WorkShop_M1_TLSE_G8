@@ -74,7 +74,8 @@ CREATE TABLE stock (
   code_barre VARCHAR(50),
   date_creation TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   date_derniere_modif TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  dernier_utilisateur_modif VARCHAR(100)
+  dernier_utilisateur_modif VARCHAR(100),
+  prix_unitaire DECIMAL(10, 2) NOT NULL DEFAULT 0
 );
 
 CREATE TABLE compta (
@@ -125,9 +126,23 @@ CREATE TABLE logs_connexion (
   FOREIGN KEY (id_personnel) REFERENCES personnel(id)
 );
 
+CREATE TABLE commandes (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  id_stock INT NOT NULL, -- Référence à l'article dans la table stock
+  quantite_commande INT NOT NULL, 
+  statut ENUM('en cours', 'livré', 'annulé') DEFAULT 'en cours', 
+  date_commande TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  date_livraison TIMESTAMP NULL, 
+  dernier_utilisateur_modif VARCHAR(100), 
+  prix_unitaires DECIMAL(10, 2) NOT NULL DEFAULT 0,
+  FOREIGN KEY (id_stock) REFERENCES stock(id)
+);
+
 
 INSERT INTO password (id_personnel, password_hash, expiration_password, tentative_connexion_echouee, compte_verrouille)
 VALUES (7, '$2y$10$vvEX5d2dewiUY.vQZqmMh.IuIwll2RPKKzteOlBMp3D7tbyndUVBu', NULL, 0, FALSE);
 
 INSERT INTO personnel (nom, prenom, mail_pro, mail_perso, tel_pro, tel_perso, categorie, poste_occupe, role, statut)
 VALUES ('Dupont', 'Jean', 'infirmier@hopital.com', 'infirmier@gmail.com', '0123456789', '0987654321', 'Soins', 'infirmier', 'infirmier', 'actif');
+
+-- ALTER TABLE commandes RENAME COLUMN prix_unitaire TO prix_unitaires;
