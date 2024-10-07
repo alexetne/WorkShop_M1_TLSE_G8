@@ -1,0 +1,57 @@
+/* style.css */
+
+/* Primary color palette */
+:root {
+    --primary-dark: #0b162c;
+    --primary-medium: #1b2943;
+    --primary-light: #3b556c;
+  }
+  
+  /* Body Styling */
+  body {
+    font-family: 'Roboto', sans-serif;
+    background-color: var(--primary-dark);
+    color: #ffffff;
+    margin: 0;
+    padding: 0;
+  }
+  
+  /* Navbar Styling */
+  .navbar {
+    background-color: var(--primary-medium);
+  }
+  
+  .navbar-brand, .navbar-nav .nav-link {
+    color: #ffffff !important;
+  }
+  
+  .navbar-brand:hover, .navbar-nav .nav-link:hover {
+    color: var(--primary-light) !important;
+  }
+  
+  /* Button Styling */
+  .btn-primary {
+    background-color: var(--primary-light);
+    border-color: var(--primary-light);
+  }
+  
+  .btn-primary:hover {
+    background-color: var(--primary-dark);
+    border-color: var(--primary-dark);
+  }
+  
+  /* Footer (if needed) */
+  footer {
+    background-color: var(--primary-medium);
+    color: #ffffff;
+    padding: 20px;
+    text-align: center;
+  }
+  
+  /* Additional custom styles */
+  .container {
+    padding: 20px;
+    background-color: var(--primary-light);
+    border-radius: 8px;
+  }
+  
