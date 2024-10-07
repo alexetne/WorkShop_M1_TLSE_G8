@@ -8,6 +8,31 @@ session_start();
 $database = new Database();
 $db = $database->getConnection();
 
+// Vérifier si l'utilisateur est déjà connecté
+if (isset($_SESSION['user_id']) && isset($_SESSION['role'])) {
+    // Redirection en fonction du rôle de l'utilisateur connecté
+    switch ($_SESSION['role']) {
+        case 'admin':
+            header("Location: admin/index.php");
+            exit;
+        case 'medecin':
+            header("Location: medecin/index.php");
+            exit;
+        case 'infirmier':
+            header("Location: infirmier/index.php");
+            exit;
+        case 'aide-soignant':
+            header("Location: aide-soignant/index.php");
+            exit;
+        case 'secretaire':
+            header("Location: secretaire/index.php");
+            exit;
+        default:
+            header("Location: autre/index.php");
+            exit;
+    }
+}
+
 // Variables pour gérer les messages d'erreur ou de succès
 $error_message = '';
 $success_message = '';

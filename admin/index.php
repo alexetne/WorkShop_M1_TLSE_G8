@@ -1,11 +1,18 @@
 <?php
-// Inclure le header
+// Inclure le header et démarrer la session
 include '../header.php';
-
-// Simuler une session d'administrateur connecté (remplacer par une session réelle en production)
 session_start();
-$admin_nom = "Legrand";
-$admin_prenom = "Marie";
+
+// Vérifier si l'utilisateur est connecté et a le rôle approprié
+if (!isset($_SESSION['user_id']) || !isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+    // Si l'utilisateur n'est pas connecté ou n'a pas le bon rôle, redirection vers la page de connexion
+    header("Location: ../login.php");
+    exit;
+}
+
+// Si l'utilisateur est connecté avec le bon rôle, récupérer les informations de session
+// $admin_nom = "Legrand"; // Vous pouvez récupérer ces informations depuis la BDD si nécessaire
+// $admin_prenom = "Marie";
 ?>
 
 <div class="container mt-5">
@@ -79,7 +86,6 @@ $admin_prenom = "Marie";
             </div>
         </div>
     </div>
-
 </div>
 
 <?php

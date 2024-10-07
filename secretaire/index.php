@@ -1,11 +1,18 @@
 <?php
-// Inclure le header
+// Inclure le header et démarrer la session
 include '../header.php';
-
-// Simuler une session de secrétaire connecté
 session_start();
-$secretaire_nom = "Doe";
-$secretaire_prenom = "Jane";
+
+// Vérifier si l'utilisateur est connecté et a le rôle approprié
+if (!isset($_SESSION['user_id']) || !isset($_SESSION['role']) || $_SESSION['role'] !== 'secretaire') {
+    // Si l'utilisateur n'est pas connecté ou n'a pas le bon rôle, redirection vers la page de connexion
+    header("Location: ../login.php");
+    exit;
+}
+
+// Si l'utilisateur est connecté avec le bon rôle, récupérer les informations de session
+// $secretaire_nom = "Doe"; // Vous pouvez récupérer ces informations depuis la BDD si nécessaire
+// $secretaire_prenom = "Jane";
 ?>
 
 <div class="container mt-5">

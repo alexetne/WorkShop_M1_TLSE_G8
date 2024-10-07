@@ -1,11 +1,18 @@
 <?php
-// Inclure le header
+// Inclure le header et démarrer la session
 include '../header.php';
-
-// Simuler une session de gestionnaire de stocks connecté (remplacer par une session réelle en production)
 session_start();
-$gestionnaire_nom = "Lemoine";
-$gestionnaire_prenom = "Sophie";
+
+// Vérifier si l'utilisateur est connecté et a le rôle approprié
+if (!isset($_SESSION['user_id']) || !isset($_SESSION['role']) || $_SESSION['role'] !== 'gestionnaire') {
+    // Si l'utilisateur n'est pas connecté ou n'a pas le bon rôle, redirection vers la page de connexion
+    header("Location: ../login.php");
+    exit;
+}
+
+// Si l'utilisateur est connecté avec le bon rôle, récupérer les informations de session
+// $gestionnaire_nom = "Lemoine"; // Vous pouvez récupérer ces informations depuis la BDD si nécessaire
+// $gestionnaire_prenom = "Sophie";
 ?>
 
 <div class="container mt-5">
