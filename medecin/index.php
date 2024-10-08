@@ -99,6 +99,7 @@ $medecin_prenom = $_SESSION['prenom'];
             <div class="card">
                 <div class="card-body">
                     <a href="#" class="btn btn-primary">Ajouter une ordonnance</a>
+                    <a href="#" class="btn btn-primary">Ajouter un dossier patient</a>
                     <!-- Bouton pour ouvrir la popup de sélection de patient pour la prescription -->
                     <button class="btn btn-secondary" data-toggle="modal" data-target="#selectPatientPrescriptionModal">Voir les prescriptions</button>
                     <!-- Bouton pour ouvrir la popup de sélection de patient pour les actes médicaux -->
