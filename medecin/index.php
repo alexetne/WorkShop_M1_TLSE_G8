@@ -65,7 +65,7 @@ $medecin_prenom = $_SESSION['prenom'];
             <ul class="list-group">
                 <?php
                 // Requête pour obtenir les patients hospitalisés sous la charge du médecin
-                $query = "SELECT p.nom AS patient_nom, p.prenom AS patient_prenom, s.nom AS salle_nom, s.numero_chambre 
+                $query = "SELECT p.id, p.nom AS patient_nom, p.prenom AS patient_prenom, s.nom AS salle_nom, s.numero_chambre 
                           FROM hospitalisation h
                           JOIN patient p ON h.id_patient = p.id
                           JOIN salle_hopital s ON h.id_salle = s.id
@@ -99,10 +99,82 @@ $medecin_prenom = $_SESSION['prenom'];
             <div class="card">
                 <div class="card-body">
                     <a href="#" class="btn btn-primary">Ajouter une ordonnance</a>
-                    <a href="#" class="btn btn-secondary">Voir les prescriptions</a>
-                    <a href="consulter_actes.php" class="btn btn-info">Consulter les actes médicaux</a>
+                    <!-- Bouton pour ouvrir la popup de sélection de patient pour la prescription -->
+                    <button class="btn btn-secondary" data-toggle="modal" data-target="#selectPatientPrescriptionModal">Voir les prescriptions</button>
+                    <!-- Bouton pour ouvrir la popup de sélection de patient pour les actes médicaux -->
+                    <button class="btn btn-info" data-toggle="modal" data-target="#selectPatientActesModal">Consulter les actes médicaux</button>
                 </div>
                 <p class="mt-3">Accédez rapidement aux outils pour gérer les ordonnances, prescriptions et actes médicaux liés aux patients sous votre responsabilité.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal pour sélectionner un patient pour les actes médicaux -->
+    <div class="modal fade" id="selectPatientActesModal" tabindex="-1" role="dialog" aria-labelledby="selectPatientActesModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="selectPatientActesModalLabel">Sélectionner un patient pour les actes médicaux</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <ul class="list-group">
+                        <?php
+                        // Requête pour obtenir la liste des patients sous la charge du médecin
+                        $query_patients = "SELECT p.id, p.nom, p.prenom 
+                                           FROM hospitalisation h
+                                           JOIN patient p ON h.id_patient = p.id
+                                           WHERE h.id_medecin = :id_medecin";
+                        $stmt_patients = $db->prepare($query_patients);
+                        $stmt_patients->bindParam(':id_medecin', $_SESSION['user_id']);
+                        $stmt_patients->execute();
+                        $patients = $stmt_patients->fetchAll(PDO::FETCH_ASSOC);
+
+                        // Affichage des patients
+                        foreach ($patients as $patient) {
+                            echo '<li class="list-group-item">';
+                            echo '<a href="consulter_actes.php?id_patient=' . htmlspecialchars($patient['id']) . '">';
+                            echo htmlspecialchars($patient['prenom']) . ' ' . htmlspecialchars($patient['nom']);
+                            echo '</a>';
+                            echo '</li>';
+                        }
+                        ?>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal pour sélectionner un patient pour les prescriptions -->
+    <div class="modal fade" id="selectPatientPrescriptionModal" tabindex="-1" role="dialog" aria-labelledby="selectPatientPrescriptionModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="selectPatientPrescriptionModalLabel">Sélectionner un patient pour les prescriptions</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <ul class="list-group">
+                        <?php
+                        // Requête pour obtenir la liste des patients sous la charge du médecin
+                        $stmt_patients->execute();
+                        $patients = $stmt_patients->fetchAll(PDO::FETCH_ASSOC);
+
+                        // Affichage des patients
+                        foreach ($patients as $patient) {
+                            echo '<li class="list-group-item">';
+                            echo '<a href="consulter_prescriptions.php?id_patient=' . htmlspecialchars($patient['id']) . '">';
+                            echo htmlspecialchars($patient['prenom']) . ' ' . htmlspecialchars($patient['nom']);
+                            echo '</a>';
+                            echo '</li>';
+                        }
+                        ?>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
