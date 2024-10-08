@@ -18,7 +18,7 @@ body {
     padding: 0;
     display: flex;
     flex-direction: column;
-    min-height: 100vh; /* S'assurer que la page occupe toute la hauteur de la fenêtre */
+    min-height: 100vh; /* Full viewport height */
 }
 
 /* Main content should take up remaining space */
@@ -183,6 +183,7 @@ footer {
     background-color: var(--primary-light);
     border-radius: 8px;
     color: #ffffff;
+    margin-bottom: 2%;
 }
 
 .row {
@@ -191,7 +192,9 @@ footer {
 
 /* Image Styling */
 img {
-    width: 10%;
+    width: 100%;
+    max-width: 200px;
+    height: auto;
 }
 
 /* Additional custom elements for table, form, and cards */
@@ -224,7 +227,9 @@ li.list-group-item {
 }
 
 /* Responsive Media Queries */
-@media (max-width: 768px) {
+
+/* Small devices (max-width: 576px) */
+@media (max-width: 576px) {
     .container {
         padding: 10px;
     }
@@ -236,8 +241,42 @@ li.list-group-item {
     .card {
         margin-bottom: 15px;
     }
+
+    img {
+        width: 80%;
+    }
 }
 
-.container {
-    margin-bottom: 2%;
+/* Medium devices (max-width: 768px) */
+@media (max-width: 768px) {
+    .container {
+        padding: 10px;
+    }
+
+    .navbar-brand, .navbar-nav .nav-link {
+        font-size: 16px;
+    }
+
+    .card {
+        margin-bottom: 20px;
+    }
+
+    img {
+        width: 60%;
+    }
+}
+
+/* Large devices (max-width: 992px) */
+@media (max-width: 992px) {
+    .navbar-brand, .navbar-nav .nav-link {
+        font-size: 18px;
+    }
+
+    .card {
+        margin-bottom: 25px;
+    }
+
+    img {
+        width: 50%;
+    }
 }

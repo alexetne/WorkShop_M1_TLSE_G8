@@ -175,10 +175,39 @@ CREATE TABLE actes_medicaux (
 
 ADD CONSTRAINT fk_patient_medecin FOREIGN KEY (id_medecin) REFERENCES personnel(id);
 
+
+
+INSERT INTO personnel (nom, prenom, mail_pro, mail_perso, tel_pro, tel_perso, categorie, poste_occupe, role, statut)
+VALUES ('Dupont', 'Jean', 'admin@hopital.com', 'admin@gmail.com', '0123456789', '0987654321', 'Soins', 'admin', 'admin', 'actif');
+
 INSERT INTO password (id_personnel, password_hash, expiration_password, tentative_connexion_echouee, compte_verrouille)
-VALUES (6, '$2y$10$vvEX5d2dewiUY.vQZqmMh.IuIwll2RPKKzteOlBMp3D7tbyndUVBu', NULL, 0, FALSE);
+VALUES (2, '$2y$10$vvEX5d2dewiUY.vQZqmMh.IuIwll2RPKKzteOlBMp3D7tbyndUVBu', NULL, 0, FALSE);
+
+INSERT INTO personnel (nom, prenom, mail_pro, mail_perso, tel_pro, tel_perso, categorie, poste_occupe, role, statut)
+VALUES ('Dupont', 'Jean', 'infirmier@hopital.com', 'infirmier@gmail.com', '0123456789', '0987654321', 'Soins', 'infirmier', 'infirmier', 'actif');
+
+INSERT INTO password (id_personnel, password_hash, expiration_password, tentative_connexion_echouee, compte_verrouille)
+VALUES (3, '$2y$10$vvEX5d2dewiUY.vQZqmMh.IuIwll2RPKKzteOlBMp3D7tbyndUVBu', NULL, 0, FALSE);
+
+INSERT INTO personnel (nom, prenom, mail_pro, mail_perso, tel_pro, tel_perso, categorie, poste_occupe, role, statut)
+VALUES ('Dupont', 'Jean', 'aide-soignant@hopital.com', 'aide-soignant@gmail.com', '0123456789', '0987654321', 'Soins', 'aide-soignant', 'aide-soignant', 'actif');
+
+INSERT INTO password (id_personnel, password_hash, expiration_password, tentative_connexion_echouee, compte_verrouille)
+VALUES (4, '$2y$10$vvEX5d2dewiUY.vQZqmMh.IuIwll2RPKKzteOlBMp3D7tbyndUVBu', NULL, 0, FALSE);
+
+INSERT INTO personnel (nom, prenom, mail_pro, mail_perso, tel_pro, tel_perso, categorie, poste_occupe, role, statut)
+VALUES ('Dupont', 'Jean', 'secretaire@hopital.com', 'secretaire@gmail.com', '0123456789', '0987654321', 'Soins', 'secretaire', 'secretaire', 'actif');
+
+INSERT INTO password (id_personnel, password_hash, expiration_password, tentative_connexion_echouee, compte_verrouille)
+VALUES (5, '$2y$10$vvEX5d2dewiUY.vQZqmMh.IuIwll2RPKKzteOlBMp3D7tbyndUVBu', NULL, 0, FALSE);
 
 INSERT INTO personnel (nom, prenom, mail_pro, mail_perso, tel_pro, tel_perso, categorie, poste_occupe, role, statut)
 VALUES ('Dupont', 'Jean', 'autre@hopital.com', 'autre@gmail.com', '0123456789', '0987654321', 'Soins', 'autre', 'autre', 'actif');
+
+INSERT INTO password (id_personnel, password_hash, expiration_password, tentative_connexion_echouee, compte_verrouille)
+VALUES (6, '$2y$10$vvEX5d2dewiUY.vQZqmMh.IuIwll2RPKKzteOlBMp3D7tbyndUVBu', NULL, 0, FALSE);
+
+
+
 
 -- ALTER TABLE commandes RENAME COLUMN prix_unitaire TO prix_unitaires;
