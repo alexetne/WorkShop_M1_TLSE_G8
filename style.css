@@ -279,4 +279,7 @@ li.list-group-item {
     img {
         width: 50%;
     }
+    .btn {
+        width: 100%;
+    }
 }
