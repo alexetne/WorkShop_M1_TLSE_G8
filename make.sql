@@ -132,7 +132,7 @@ CREATE TABLE logs_connexion (
   id_personnel INT NOT NULL,
   ip_adresse VARCHAR(45) NOT NULL,
   date_connexion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  resultat ENUM('succès', 'échec') NOT NULL,
+  resultat VARCHAR(10) NOT NULL,
   FOREIGN KEY (id_personnel) REFERENCES personnel(id)
 );
 
