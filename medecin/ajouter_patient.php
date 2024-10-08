@@ -10,7 +10,7 @@ function encryptData($data, $key) {
     return ['ciphertext' => $encrypted_data, 'iv' => bin2hex($iv)];
 }
 
-$encryption_key = 'ML6aafj4pxUE3zhETEOQeIdyQe1Tv2QIcVZj5AAR'; // Définir une clé de chiffrement sécurisée
+$encryption_key = 'VotreCléDeChiffrementSécuriséeIci'; // Définir une clé de chiffrement sécurisée
 $error_message = '';
 $success_message = '';
 
@@ -32,23 +32,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $mail = $_POST['mail'];
     $telephone_port = $_POST['telephone_port'];
     $telephone_fixe = $_POST['telephone_fixe'];
-    $num_mutuelle = $_POST['num_mutuelle'];
+    $num_mutuelle = !empty($_POST['num_mutuelle']) ? $_POST['num_mutuelle'] : NULL;  // Si vide, on remplace par NULL
 
-    // Vérifier si tous les champs sont remplis
+    // Récupérer l'ID du médecin à partir de la session
+    $id_medecin = $_SESSION['user_id'];
+
+    // Vérifier si tous les champs obligatoires sont remplis
     if (!empty($nom) && !empty($prenom) && !empty($date_naissance) && !empty($num_secu_social)) {
         // Chiffrer le numéro de sécurité sociale avant l'insertion
         $encrypted_ssn = encryptData($num_secu_social, $encryption_key);
 
-        // Requête d'insertion du patient
+        // Requête d'insertion du patient avec l'ID du médecin
         $query = "INSERT INTO patient (
                     nom, prenom, date_naissance, profession, num_secu_social, medecin_traitant, 
                     adresse_rue, adresse_ville, adresse_code_postal, mail, telephone_port, 
-                    telephone_fixe, num_mutuelle, date_creation
+                    telephone_fixe, num_mutuelle, id_medecin, date_creation
                   ) 
                   VALUES (
                     :nom, :prenom, :date_naissance, :profession, :num_secu_social, :medecin_traitant,
                     :adresse_rue, :adresse_ville, :adresse_code_postal, :mail, :telephone_port, 
-                    :telephone_fixe, :num_mutuelle, NOW()
+                    :telephone_fixe, :num_mutuelle, :id_medecin, NOW()
                   )";
         $stmt = $db->prepare($query);
         
@@ -65,8 +68,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt->bindParam(':mail', $mail);
         $stmt->bindParam(':telephone_port', $telephone_port);
         $stmt->bindParam(':telephone_fixe', $telephone_fixe);
-        $stmt->bindParam(':num_mutuelle', $num_mutuelle);
+        $stmt->bindParam(':num_mutuelle', $num_mutuelle, PDO::PARAM_INT); // Accepter NULL
+        $stmt->bindParam(':id_medecin', $id_medecin); // Lier l'ID du médecin
 
+        // Exécuter la requête
         if ($stmt->execute()) {
             $success_message = "Patient ajouté avec succès.";
         } else {

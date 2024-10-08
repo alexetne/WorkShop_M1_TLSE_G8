@@ -1,6 +1,9 @@
 create database mediflow;
 use mediflow;
 
+select prenom, num_secu_social, mail, num_mutuelle, date_creation, date_derniere_modif from patient;
+
+
 CREATE TABLE patient (
   id INT PRIMARY KEY AUTO_INCREMENT,
   nom VARCHAR(100) NOT NULL,
@@ -14,15 +17,16 @@ CREATE TABLE patient (
     'Employés',
     'autres'
   ),
-  num_secu_social CHAR(15) NOT NULL UNIQUE,
+  num_secu_social CHAR(100) NOT NULL UNIQUE,
   medecin_traitant VARCHAR(100),
   adresse_rue VARCHAR(150),
   adresse_ville VARCHAR(100),
   adresse_code_postal VARCHAR(10),
   mail VARCHAR(200),
   telephone_port VARCHAR(15),
+  id_medecin INT,
   telephone_fixe VARCHAR(15),
-  num_mutuelle BIGINT(30),
+  num_mutuelle BIGINT(30) DEFAULT NULL,
   date_creation DATETIME DEFAULT NOW(),
   date_derniere_modif DATETIME DEFAULT NOW() ON UPDATE NOW()
 );
@@ -169,10 +173,12 @@ CREATE TABLE actes_medicaux (
 );
 
 
+ADD CONSTRAINT fk_patient_medecin FOREIGN KEY (id_medecin) REFERENCES personnel(id);
+
 INSERT INTO password (id_personnel, password_hash, expiration_password, tentative_connexion_echouee, compte_verrouille)
-VALUES (7, '$2y$10$vvEX5d2dewiUY.vQZqmMh.IuIwll2RPKKzteOlBMp3D7tbyndUVBu', NULL, 0, FALSE);
+VALUES (1, '$2y$10$vvEX5d2dewiUY.vQZqmMh.IuIwll2RPKKzteOlBMp3D7tbyndUVBu', NULL, 0, FALSE);
 
 INSERT INTO personnel (nom, prenom, mail_pro, mail_perso, tel_pro, tel_perso, categorie, poste_occupe, role, statut)
-VALUES ('Dupont', 'Jean', 'infirmier@hopital.com', 'infirmier@gmail.com', '0123456789', '0987654321', 'Soins', 'infirmier', 'infirmier', 'actif');
+VALUES ('Dupont', 'Jean', 'medecin@hopital.com', 'infirmier@gmail.com', '0123456789', '0987654321', 'Soins', 'medecin', 'medecin', 'actif');
 
 -- ALTER TABLE commandes RENAME COLUMN prix_unitaire TO prix_unitaires;

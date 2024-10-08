@@ -18,6 +18,16 @@ $db = $database->getConnection();
 // Récupérer les informations du médecin à partir de la session
 $medecin_nom = $_SESSION['nom'];
 $medecin_prenom = $_SESSION['prenom'];
+
+// Récupérer la liste des patients sous la charge du médecin
+$query_patients = "SELECT p.id, p.nom, p.prenom 
+                   FROM hospitalisation h
+                   JOIN patient p ON h.id_patient = p.id
+                   WHERE h.id_medecin = :id_medecin";
+$stmt_patients = $db->prepare($query_patients);
+$stmt_patients->bindParam(':id_medecin', $_SESSION['user_id']);
+$stmt_patients->execute();
+$patients = $stmt_patients->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <div class="container mt-5">
@@ -32,24 +42,22 @@ $medecin_prenom = $_SESSION['prenom'];
                 // Récupérer la date actuelle
                 $today = date('Y-m-d');
 
-                // Requête pour obtenir les consultations du jour (type = 'consultation')
-                $query = "SELECT p.jour, p.type, p.heure, s.nom AS salle_nom, pers.nom AS medecin_nom, pers.prenom AS medecin_prenom 
-                          FROM planning p
-                          JOIN salle_hopital s ON p.id_salle = s.id
-                          JOIN personnel pers ON p.id_personnel = pers.id
-                          WHERE p.jour = :today AND p.type = 'consultation' AND p.id_personnel = :id_personnel";
-                $stmt = $db->prepare($query);
-                $stmt->bindParam(':today', $today);
-                $stmt->bindParam(':id_personnel', $_SESSION['user_id']);
-                $stmt->execute();
-                $consultations = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                // Requête pour obtenir les consultations du jour
+                $query_consultations = "SELECT p.jour, p.type, p.heure, s.nom AS salle_nom
+                                        FROM planning p
+                                        JOIN salle_hopital s ON p.id_salle = s.id
+                                        WHERE p.jour = :today AND p.type = 'consultation' AND p.id_personnel = :id_personnel";
+                $stmt_consultations = $db->prepare($query_consultations);
+                $stmt_consultations->bindParam(':today', $today);
+                $stmt_consultations->bindParam(':id_personnel', $_SESSION['user_id']);
+                $stmt_consultations->execute();
+                $consultations = $stmt_consultations->fetchAll(PDO::FETCH_ASSOC);
 
                 // Affichage des consultations
                 if (count($consultations) > 0) {
                     foreach ($consultations as $consultation) {
                         echo '<li class="list-group-item">';
-                        echo htmlspecialchars($consultation['heure']) . ' - ';
-                        echo 'Salle : ' . htmlspecialchars($consultation['salle_nom']);
+                        echo htmlspecialchars($consultation['heure']) . ' - Salle : ' . htmlspecialchars($consultation['salle_nom']);
                         echo '</li>';
                     }
                 } else {
@@ -64,24 +72,13 @@ $medecin_prenom = $_SESSION['prenom'];
             <h4>Patients hospitalisés sous votre charge</h4>
             <ul class="list-group">
                 <?php
-                // Requête pour obtenir les patients hospitalisés sous la charge du médecin
-                $query = "SELECT p.id, p.nom AS patient_nom, p.prenom AS patient_prenom, s.nom AS salle_nom, s.numero_chambre 
-                          FROM hospitalisation h
-                          JOIN patient p ON h.id_patient = p.id
-                          JOIN salle_hopital s ON h.id_salle = s.id
-                          WHERE h.id_medecin = :id_medecin AND h.statut = 'hospitalisé'";
-                $stmt = $db->prepare($query);
-                $stmt->bindParam(':id_medecin', $_SESSION['user_id']);
-                $stmt->execute();
-                $patients = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
                 // Affichage des patients hospitalisés
                 if (count($patients) > 0) {
                     foreach ($patients as $patient) {
                         echo '<li class="list-group-item">';
                         echo '<a href="dossier_medical.php?id_patient=' . htmlspecialchars($patient['id']) . '">';
                         echo htmlspecialchars($patient['prenom']) . ' ' . htmlspecialchars($patient['nom']);
-                        echo '</a> (Chambre ' . htmlspecialchars($patient['numero_chambre']) . ')';
+                        echo '</a>';
                         echo '</li>';
                     }
                 } else {
@@ -99,7 +96,7 @@ $medecin_prenom = $_SESSION['prenom'];
             <div class="card">
                 <div class="card-body">
                     <a href="#" class="btn btn-primary">Ajouter une ordonnance</a>
-                    <a href="#" class="btn btn-primary">Ajouter un dossier patient</a>
+                    <a href="ajouter_patient.php" class="btn btn-primary">Ajouter un dossier patient</a>
                     <!-- Bouton pour ouvrir la popup de sélection de patient pour la prescription -->
                     <button class="btn btn-secondary" data-toggle="modal" data-target="#selectPatientPrescriptionModal">Voir les prescriptions</button>
                     <!-- Bouton pour ouvrir la popup de sélection de patient pour les actes médicaux -->
@@ -123,17 +120,7 @@ $medecin_prenom = $_SESSION['prenom'];
                 <div class="modal-body">
                     <ul class="list-group">
                         <?php
-                        // Requête pour obtenir la liste des patients sous la charge du médecin
-                        $query_patients = "SELECT p.id, p.nom, p.prenom 
-                                           FROM hospitalisation h
-                                           JOIN patient p ON h.id_patient = p.id
-                                           WHERE h.id_medecin = :id_medecin";
-                        $stmt_patients = $db->prepare($query_patients);
-                        $stmt_patients->bindParam(':id_medecin', $_SESSION['user_id']);
-                        $stmt_patients->execute();
-                        $patients = $stmt_patients->fetchAll(PDO::FETCH_ASSOC);
-
-                        // Affichage des patients
+                        // Affichage des patients pour les actes médicaux
                         foreach ($patients as $patient) {
                             echo '<li class="list-group-item">';
                             echo '<a href="consulter_actes.php?id_patient=' . htmlspecialchars($patient['id']) . '">';
@@ -161,11 +148,7 @@ $medecin_prenom = $_SESSION['prenom'];
                 <div class="modal-body">
                     <ul class="list-group">
                         <?php
-                        // Requête pour obtenir la liste des patients sous la charge du médecin
-                        $stmt_patients->execute();
-                        $patients = $stmt_patients->fetchAll(PDO::FETCH_ASSOC);
-
-                        // Affichage des patients
+                        // Affichage des patients pour les prescriptions
                         foreach ($patients as $patient) {
                             echo '<li class="list-group-item">';
                             echo '<a href="consulter_prescriptions.php?id_patient=' . htmlspecialchars($patient['id']) . '">';
