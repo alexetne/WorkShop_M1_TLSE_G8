@@ -1,0 +1,54 @@
+# Désactiver l'affichage des erreurs PHP
+php_flag display_errors Off
+
+# Empêcher l'accès aux fichiers sensibles
+<FilesMatch "(^\.|composer\.(json|lock)|\.env|\.git|\.htaccess|config\.php|db\.php)">
+    Require all denied
+</FilesMatch>
+
+# Empêcher l'accès au répertoire racine du serveur
+Options -Indexes
+
+# Activer la réécriture d'URL pour cacher les extensions de fichiers PHP (mod_rewrite doit être activé sur le serveur)
+RewriteEngine On
+
+# Forcer HTTPS uniquement si la requête n'est pas déjà en HTTPS ou derrière un reverse proxy
+# RewriteCond %{HTTPS} !=on
+RewriteCond %{HTTP:X-Forwarded-Proto} !https
+# RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Protection contre les attaques de type Cross-Site Scripting (XSS)
+<IfModule mod_headers.c>
+    Header set X-XSS-Protection "1; mode=block"
+</IfModule>
+
+# Protection contre les attaques de type Clickjacking
+<IfModule mod_headers.c>
+    Header always append X-Frame-Options SAMEORIGIN
+</IfModule>
+
+# Protection contre les attaques MIME sniffing
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options nosniff
+</IfModule>
+
+# Forcer la dernière version du protocole HTTP (si supporté par le serveur)
+<IfModule mod_headers.c>
+    Header set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+</IfModule>
+
+# Empêcher l'accès aux fichiers de sauvegarde
+<FilesMatch "\.(bak|old|save|swp|log|sql)$">
+    Require all denied
+</FilesMatch>
+
+# Désactiver les méthodes HTTP non sécurisées
+RewriteCond %{REQUEST_METHOD} ^(TRACE|TRACK|DEBUG|OPTIONS|DELETE|PUT)$ [NC]
+RewriteRule .* - [F,L]
+
+# Réécriture d'URL pour cacher l'extension .php (exemple : /page au lieu de /page.php)
+RewriteCond %{REQUEST_FILENAME}.php -f
+RewriteRule ^(.*)$ $1.php [NC,L]
+
+# Limiter la taille des requêtes POST à 10 Mo
+LimitRequestBody 10485760
