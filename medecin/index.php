@@ -10,23 +10,52 @@ if (!isset($_SESSION['user_id']) || !isset($_SESSION['role']) || $_SESSION['role
     exit;
 }
 
-// Si l'utilisateur est connecté avec le bon rôle, récupérer les informations de session
-// $medecin_nom = "Dupont"; // Vous pouvez récupérer ces informations depuis la BDD si nécessaire
-// $medecin_prenom = "Jean";
+// Connexion à la base de données
+include_once '../config/db.php';
+$database = new Database();
+$db = $database->getConnection();
+
+// Récupérer les informations du médecin à partir de la session
+$medecin_nom = $_SESSION['nom'];
+$medecin_prenom = $_SESSION['prenom'];
 ?>
 
 <div class="container mt-5">
-    <h2>Bienvenue, Dr. <?php echo $medecin_prenom . " " . $medecin_nom; ?></h2>
+    <h2>Bienvenue, Dr. <?php echo htmlspecialchars($medecin_prenom) . " " . htmlspecialchars($medecin_nom); ?></h2>
     
     <div class="row mt-4">
-        <!-- Tableau de bord : Rendez-vous du jour -->
+        <!-- Tableau de bord : Consultations du jour -->
         <div class="col-md-6">
             <h4>Consultations du jour</h4>
             <ul class="list-group">
-                <li class="list-group-item">10:00 - Patient 1 (Consultation générale)</li>
-                <li class="list-group-item">11:30 - Patient 2 (Suivi post-opératoire)</li>
-                <li class="list-group-item">14:00 - Patient 3 (Consultation spécialisée)</li>
-                <li class="list-group-item">16:00 - Patient 4 (Diagnostic radiologique)</li>
+                <?php
+                // Récupérer la date actuelle
+                $today = date('Y-m-d');
+
+                // Requête pour obtenir les consultations du jour (type = 'consultation')
+                $query = "SELECT p.jour, p.type, p.heure, s.nom AS salle_nom, pers.nom AS medecin_nom, pers.prenom AS medecin_prenom 
+                          FROM planning p
+                          JOIN salle_hopital s ON p.id_salle = s.id
+                          JOIN personnel pers ON p.id_personnel = pers.id
+                          WHERE p.jour = :today AND p.type = 'consultation' AND p.id_personnel = :id_personnel";
+                $stmt = $db->prepare($query);
+                $stmt->bindParam(':today', $today);
+                $stmt->bindParam(':id_personnel', $_SESSION['user_id']);
+                $stmt->execute();
+                $consultations = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+                // Affichage des consultations
+                if (count($consultations) > 0) {
+                    foreach ($consultations as $consultation) {
+                        echo '<li class="list-group-item">';
+                        echo htmlspecialchars($consultation['heure']) . ' - ';
+                        echo 'Salle : ' . htmlspecialchars($consultation['salle_nom']);
+                        echo '</li>';
+                    }
+                } else {
+                    echo '<li class="list-group-item">Aucune consultation prévue aujourd\'hui.</li>';
+                }
+                ?>
             </ul>
         </div>
 
@@ -34,10 +63,31 @@ if (!isset($_SESSION['user_id']) || !isset($_SESSION['role']) || $_SESSION['role
         <div class="col-md-6">
             <h4>Patients hospitalisés sous votre charge</h4>
             <ul class="list-group">
-                <li class="list-group-item"><a href="#">Patient A - Dossier médical</a> (Chambre 101)</li>
-                <li class="list-group-item"><a href="#">Patient B - Dossier médical</a> (Chambre 102)</li>
-                <li class="list-group-item"><a href="#">Patient C - Dossier médical</a> (Chambre 105)</li>
-                <li class="list-group-item"><a href="#">Patient D - Dossier médical</a> (Chambre 108)</li>
+                <?php
+                // Requête pour obtenir les patients hospitalisés sous la charge du médecin
+                $query = "SELECT p.nom AS patient_nom, p.prenom AS patient_prenom, s.nom AS salle_nom, s.numero_chambre 
+                          FROM hospitalisation h
+                          JOIN patient p ON h.id_patient = p.id
+                          JOIN salle_hopital s ON h.id_salle = s.id
+                          WHERE h.id_medecin = :id_medecin AND h.statut = 'hospitalisé'";
+                $stmt = $db->prepare($query);
+                $stmt->bindParam(':id_medecin', $_SESSION['user_id']);
+                $stmt->execute();
+                $patients = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+                // Affichage des patients hospitalisés
+                if (count($patients) > 0) {
+                    foreach ($patients as $patient) {
+                        echo '<li class="list-group-item">';
+                        echo '<a href="dossier_medical.php?id_patient=' . htmlspecialchars($patient['id']) . '">';
+                        echo htmlspecialchars($patient['prenom']) . ' ' . htmlspecialchars($patient['nom']);
+                        echo '</a> (Chambre ' . htmlspecialchars($patient['numero_chambre']) . ')';
+                        echo '</li>';
+                    }
+                } else {
+                    echo '<li class="list-group-item">Aucun patient hospitalisé sous votre charge.</li>';
+                }
+                ?>
             </ul>
         </div>
     </div>
@@ -50,7 +100,7 @@ if (!isset($_SESSION['user_id']) || !isset($_SESSION['role']) || $_SESSION['role
                 <div class="card-body">
                     <a href="#" class="btn btn-primary">Ajouter une ordonnance</a>
                     <a href="#" class="btn btn-secondary">Voir les prescriptions</a>
-                    <a href="#" class="btn btn-info">Consulter les actes médicaux</a>
+                    <a href="consulter_actes.php" class="btn btn-info">Consulter les actes médicaux</a>
                 </div>
                 <p class="mt-3">Accédez rapidement aux outils pour gérer les ordonnances, prescriptions et actes médicaux liés aux patients sous votre responsabilité.</p>
             </div>
@@ -63,9 +113,27 @@ if (!isset($_SESSION['user_id']) || !isset($_SESSION['role']) || $_SESSION['role
             <h4>Mon Agenda</h4>
             <div class="card">
                 <div class="card-body">
-                    <p><strong>Consultations prévues :</strong> 5 aujourd'hui</p>
-                    <p><strong>Prochaine intervention :</strong> Opération à 14h00</p>
-                    <p><strong>Réunion :</strong> Conférence médicale à 16h00</p>
+                    <?php
+                    // Récupérer les consultations, interventions et réunions du jour
+                    $query_agenda = "SELECT COUNT(*) as total_consultations, 
+                                            (SELECT heure FROM planning WHERE type = 'intervention' AND jour = :today AND id_personnel = :id_personnel ORDER BY heure ASC LIMIT 1) AS intervention_heure, 
+                                            (SELECT heure FROM planning WHERE type = 'réunion' AND jour = :today AND id_personnel = :id_personnel ORDER BY heure ASC LIMIT 1) AS reunion_heure
+                                     FROM planning 
+                                     WHERE type = 'consultation' AND jour = :today AND id_personnel = :id_personnel";
+                    $stmt_agenda = $db->prepare($query_agenda);
+                    $stmt_agenda->bindParam(':today', $today);
+                    $stmt_agenda->bindParam(':id_personnel', $_SESSION['user_id']);
+                    $stmt_agenda->execute();
+                    $agenda = $stmt_agenda->fetch(PDO::FETCH_ASSOC);
+                    ?>
+
+                    <p><strong>Consultations prévues :</strong> <?php echo $agenda['total_consultations']; ?> aujourd'hui</p>
+                    <p><strong>Prochaine intervention :</strong> 
+                        <?php echo $agenda['intervention_heure'] ? 'Opération à ' . htmlspecialchars($agenda['intervention_heure']) : 'Aucune intervention prévue'; ?>
+                    </p>
+                    <p><strong>Réunion :</strong> 
+                        <?php echo $agenda['reunion_heure'] ? 'Conférence médicale à ' . htmlspecialchars($agenda['reunion_heure']) : 'Aucune réunion prévue'; ?>
+                    </p>
                 </div>
             </div>
         </div>
@@ -77,10 +145,27 @@ if (!isset($_SESSION['user_id']) || !isset($_SESSION['role']) || $_SESSION['role
             <h4>Statistiques</h4>
             <div class="card">
                 <div class="card-body">
-                    <p><strong>Consultations réalisées ce mois :</strong> 45</p>
-                    <p><strong>Interventions chirurgicales :</strong> 10</p>
-                    <p><strong>Patients suivis :</strong> 25</p>
-                    <p><strong>Rendez-vous annulés :</strong> 3</p>
+                    <?php
+                    // Récupérer les statistiques mensuelles
+                    $first_day_of_month = date('Y-m-01');
+                    $last_day_of_month = date('Y-m-t');
+
+                    $query_stats = "SELECT (SELECT COUNT(*) FROM planning WHERE type = 'consultation' AND jour BETWEEN :first_day AND :last_day AND id_personnel = :id_personnel) AS consultations,
+                                           (SELECT COUNT(*) FROM planning WHERE type = 'intervention' AND jour BETWEEN :first_day AND :last_day AND id_personnel = :id_personnel) AS interventions,
+                                           (SELECT COUNT(DISTINCT id_patient) FROM planning WHERE type IN ('consultation', 'intervention') AND jour BETWEEN :first_day AND :last_day AND id_personnel = :id_personnel) AS patients_suivis,
+                                           (SELECT COUNT(*) FROM planning WHERE type = 'consultation' AND statut = 'annulé' AND jour BETWEEN :first_day AND :last_day AND id_personnel = :id_personnel) AS annulations";
+                    $stmt_stats = $db->prepare($query_stats);
+                    $stmt_stats->bindParam(':first_day', $first_day_of_month);
+                    $stmt_stats->bindParam(':last_day', $last_day_of_month);
+                    $stmt_stats->bindParam(':id_personnel', $_SESSION['user_id']);
+                    $stmt_stats->execute();
+                    $stats = $stmt_stats->fetch(PDO::FETCH_ASSOC);
+                    ?>
+
+                    <p><strong>Consultations réalisées ce mois :</strong> <?php echo $stats['consultations']; ?></p>
+                    <p><strong>Interventions chirurgicales :</strong> <?php echo $stats['interventions']; ?></p>
+                    <p><strong>Patients suivis :</strong> <?php echo $stats['patients_suivis']; ?></p>
+                    <p><strong>Rendez-vous annulés :</strong> <?php echo $stats['annulations']; ?></p>
                 </div>
             </div>
         </div>

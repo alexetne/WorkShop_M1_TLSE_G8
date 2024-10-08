@@ -41,11 +41,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $email = $_POST['email'];
     $password = $_POST['password'];
     $ip_adresse = $_SERVER['REMOTE_ADDR']; // Adresse IP de l'utilisateur
-    $role_table = 'personnel'; // Tous les rôles sont désormais dans la table `personnel` ou similaire
+    $role_table = 'personnel'; // Tous les rôles sont dans la table `personnel`
 
     if (!empty($email) && !empty($password)) {
         // Requête pour récupérer les informations de l'utilisateur
-        $query = "SELECT p.id, p.mail_pro, p.role, pass.password_hash, pass.compte_verrouille, pass.tentative_connexion_echouee 
+        $query = "SELECT p.id, p.nom, p.prenom, p.mail_pro, p.role, pass.password_hash, pass.compte_verrouille, pass.tentative_connexion_echouee 
                   FROM $role_table p 
                   JOIN password pass ON pass.id_personnel = p.id 
                   WHERE p.mail_pro = :email LIMIT 1";
@@ -75,9 +75,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $stmt_log->bindParam(':ip_adresse', $ip_adresse);
                     $stmt_log->execute();
 
-                    // Démarrer une session pour l'utilisateur
+                    // Démarrer une session pour l'utilisateur et stocker le nom, prénom et rôle
                     $_SESSION['user_id'] = $user['id'];
                     $_SESSION['role'] = $user['role'];
+                    $_SESSION['nom'] = $user['nom'];      // Ajouter le nom à la session
+                    $_SESSION['prenom'] = $user['prenom']; // Ajouter le prénom à la session
 
                     // Redirection en fonction du rôle
                     switch ($user['role']) {

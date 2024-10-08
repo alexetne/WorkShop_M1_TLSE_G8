@@ -93,19 +93,25 @@ CREATE TABLE salle_hopital (
   statut ENUM('disponible', 'occupée', 'en maintenance') DEFAULT 'disponible',
   type_salle VARCHAR(100),
   capacite_max INT,
+  numero_chambre VARCHAR(50) NOT NULL,
   date_creation TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   date_derniere_modif TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 CREATE TABLE planning (
   id INT PRIMARY KEY AUTO_INCREMENT,
-  type VARCHAR(10) NOT NULL,
+  type ENUM('consultation', 'intervention', 'réunion') NOT NULL, -- Enum pour gérer les différents types de planning
   jour DATE NOT NULL,
+  heure TIME NOT NULL,
+  statut ENUM('prévu', 'en cours', 'terminé', 'annulé') DEFAULT 'prévu',
   id_salle INT,
   id_personnel INT,
+  id_patient INT, -- Ajouter une référence au patient pour lier la consultation à un patient spécifique
   FOREIGN KEY (id_salle) REFERENCES salle_hopital(id),
-  FOREIGN KEY (id_personnel) REFERENCES personnel(id)
+  FOREIGN KEY (id_personnel) REFERENCES personnel(id),
+  FOREIGN KEY (id_patient) REFERENCES patient(id)
 );
+
 
 CREATE TABLE password (
   id INT PRIMARY KEY AUTO_INCREMENT,
@@ -136,6 +142,30 @@ CREATE TABLE commandes (
   dernier_utilisateur_modif VARCHAR(100), 
   prix_unitaires DECIMAL(10, 2) NOT NULL DEFAULT 0,
   FOREIGN KEY (id_stock) REFERENCES stock(id)
+);
+
+
+CREATE TABLE hospitalisation (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  id_patient INT NOT NULL,
+  id_salle INT NOT NULL,
+  id_medecin INT NOT NULL,
+  date_admission DATE NOT NULL,
+  date_sortie DATE DEFAULT NULL,
+  statut ENUM('hospitalisé', 'sorti') DEFAULT 'hospitalisé',
+  FOREIGN KEY (id_patient) REFERENCES patient(id),
+  FOREIGN KEY (id_salle) REFERENCES salle_hopital(id),
+  FOREIGN KEY (id_medecin) REFERENCES personnel(id)
+);
+
+CREATE TABLE actes_medicaux (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  id_patient INT NOT NULL,
+  id_medecin INT NOT NULL,
+  description TEXT NOT NULL,
+  date_acte TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (id_patient) REFERENCES patient(id),
+  FOREIGN KEY (id_medecin) REFERENCES personnel(id)
 );
 
 
