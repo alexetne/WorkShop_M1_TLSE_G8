@@ -10,7 +10,7 @@
         <a href="#" class="text-white">Politique de confidentialité</a>
       </li>
       <li class="list-inline-item">
-        <a href="/contact.php" class="text-white">Contact</a>
+        <a href="/contact" class="text-white">Contact</a>
       </li>
     </ul>
   </div>
