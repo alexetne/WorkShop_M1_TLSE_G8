@@ -5,7 +5,7 @@ session_start();
 
 // Vérifier si l'utilisateur est connecté
 if (!isset($_SESSION['user_id'])) {
-    header("Location: ../login.php");
+    header("Location: ../login");
     exit;
 }
 
@@ -63,7 +63,7 @@ $articles = $stmt_stock->fetchAll(PDO::FETCH_ASSOC);
     <?php endif; ?>
 
     <!-- Formulaire pour passer une commande -->
-    <form method="POST" action="passer_commande.php">
+    <form method="POST" action="passer_commande">
         <div class="form-group">
             <label for="id_stock">Article à commander</label>
             <select name="id_stock" class="form-control" id="id_stock" required>

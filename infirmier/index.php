@@ -6,7 +6,7 @@ session_start();
 // Vérifier si l'utilisateur est connecté et a le rôle approprié
 if (!isset($_SESSION['user_id']) || !isset($_SESSION['role']) || $_SESSION['role'] !== 'infirmier') {
     // Si l'utilisateur n'est pas connecté ou n'a pas le bon rôle, redirection vers la page de connexion
-    header("Location: ../login.php");
+    header("Location: ../login");
     exit;
 }
 

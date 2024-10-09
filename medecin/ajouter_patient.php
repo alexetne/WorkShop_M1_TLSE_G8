@@ -10,7 +10,7 @@ function encryptData($data, $key) {
     return ['ciphertext' => $encrypted_data, 'iv' => bin2hex($iv)];
 }
 
-$encryption_key = 'VotreCléDeChiffrementSécuriséeIci'; // Définir une clé de chiffrement sécurisée
+$encryption_key = 'ZDIb5ZBkJ2NuVeST2ofVY09PywR6v8O2EHWitxyA'; // Définir une clé de chiffrement sécurisée
 $error_message = '';
 $success_message = '';
 
@@ -95,7 +95,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <?php endif; ?>
     
     <!-- Formulaire d'ajout de patient -->
-    <form method="POST" action="ajouter_patient.php">
+    <form method="POST" action="ajouter_patient">
         <div class="form-group">
             <label for="nom">Nom</label>
             <input type="text" name="nom" class="form-control" id="nom" required>

@@ -6,7 +6,7 @@ session_start();
 // Vérifier si l'utilisateur est connecté et a le rôle approprié
 if (!isset($_SESSION['user_id']) || !isset($_SESSION['role']) || $_SESSION['role'] !== 'medecin') {
     // Si l'utilisateur n'est pas connecté ou n'a pas le bon rôle, redirection vers la page de connexion
-    header("Location: ../login.php");
+    header("Location: ../login");
     exit;
 }
 
@@ -76,7 +76,7 @@ $patients = $stmt_patients->fetchAll(PDO::FETCH_ASSOC);
                 if (count($patients) > 0) {
                     foreach ($patients as $patient) {
                         echo '<li class="list-group-item">';
-                        echo '<a href="dossier_medical.php?id_patient=' . htmlspecialchars($patient['id']) . '">';
+                        echo '<a href="dossier_medical?id_patient=' . htmlspecialchars($patient['id']) . '">';
                         echo htmlspecialchars($patient['prenom']) . ' ' . htmlspecialchars($patient['nom']);
                         echo '</a>';
                         echo '</li>';
@@ -96,7 +96,7 @@ $patients = $stmt_patients->fetchAll(PDO::FETCH_ASSOC);
             <div class="card">
                 <div class="card-body">
                     <a href="#" class="btn btn-primary">Ajouter une ordonnance</a>
-                    <a href="ajouter_patient.php" class="btn btn-primary">Ajouter un dossier patient</a>
+                    <a href="ajouter_patient" class="btn btn-primary">Ajouter un dossier patient</a>
                     <!-- Bouton pour ouvrir la popup de sélection de patient pour la prescription -->
                     <button class="btn btn-secondary" data-toggle="modal" data-target="#selectPatientPrescriptionModal">Voir les prescriptions</button>
                     <!-- Bouton pour ouvrir la popup de sélection de patient pour les actes médicaux -->
@@ -123,7 +123,7 @@ $patients = $stmt_patients->fetchAll(PDO::FETCH_ASSOC);
                         // Affichage des patients pour les actes médicaux
                         foreach ($patients as $patient) {
                             echo '<li class="list-group-item">';
-                            echo '<a href="consulter_actes.php?id_patient=' . htmlspecialchars($patient['id']) . '">';
+                            echo '<a href="consulter_actes?id_patient=' . htmlspecialchars($patient['id']) . '">';
                             echo htmlspecialchars($patient['prenom']) . ' ' . htmlspecialchars($patient['nom']);
                             echo '</a>';
                             echo '</li>';
@@ -151,7 +151,7 @@ $patients = $stmt_patients->fetchAll(PDO::FETCH_ASSOC);
                         // Affichage des patients pour les prescriptions
                         foreach ($patients as $patient) {
                             echo '<li class="list-group-item">';
-                            echo '<a href="consulter_prescriptions.php?id_patient=' . htmlspecialchars($patient['id']) . '">';
+                            echo '<a href="consulter_prescriptions?id_patient=' . htmlspecialchars($patient['id']) . '">';
                             echo htmlspecialchars($patient['prenom']) . ' ' . htmlspecialchars($patient['nom']);
                             echo '</a>';
                             echo '</li>';

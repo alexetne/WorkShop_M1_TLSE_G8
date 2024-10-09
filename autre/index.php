@@ -6,7 +6,7 @@ session_start();
 // Vérifier si l'utilisateur est connecté et a le rôle approprié
 if (!isset($_SESSION['user_id']) || !isset($_SESSION['role']) || $_SESSION['role'] !== 'autre') {
     // Si l'utilisateur n'est pas connecté ou n'a pas le bon rôle, redirection vers la page de connexion
-    header("Location: ../login.php");
+    header("Location: ../login");
     exit;
 }
 
@@ -99,9 +99,9 @@ $db = $database->getConnection();
             <h4>Gestion des réapprovisionnements</h4>
             <div class="card">
                 <div class="card-body">
-                    <a href="passer_commande.php" class="btn btn-primary">Passer une commande</a>
-                    <a href="gerer_commandes.php" class="btn btn-secondary">Suivre les commandes en cours</a>
-                    <a href="historique_commandes.php" class="btn btn-info">Consulter l'historique des commandes</a>
+                    <a href="passer_commande" class="btn btn-primary">Passer une commande</a>
+                    <a href="gerer_commandes" class="btn btn-secondary">Suivre les commandes en cours</a>
+                    <a href="historique_commandes" class="btn btn-info">Consulter l'historique des commandes</a>
                 </div>
                 <p class="mt-3">Accédez aux outils pour passer de nouvelles commandes, suivre les livraisons en cours, et consulter l'historique.</p>
             </div>

@@ -5,7 +5,7 @@ session_start();
 
 // Vérifier si l'utilisateur est connecté
 if (!isset($_SESSION['user_id'])) {
-    header("Location: ../login.php");
+    header("Location: ../login");
     exit;
 }
 
@@ -125,7 +125,7 @@ $commandes = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <td><?php echo htmlspecialchars($commande['date_commande']); ?></td>
                         <td><?php echo htmlspecialchars($commande['service']); ?></td>
                         <td>
-                            <form method="POST" action="gerer_commandes.php">
+                            <form method="POST" action="gerer_commandes">
                                 <input type="hidden" name="id_commande" value="<?php echo $commande['id']; ?>">
                                 <button type="submit" name="action" value="livrer" class="btn btn-success">Marquer comme livrée</button>
                                 <button type="submit" name="action" value="annuler" class="btn btn-danger">Annuler la commande</button>

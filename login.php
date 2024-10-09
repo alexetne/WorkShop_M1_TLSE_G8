@@ -16,22 +16,22 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['role'])) {
     // Redirection en fonction du rôle de l'utilisateur connecté
     switch ($_SESSION['role']) {
         case 'admin':
-            header("Location: admin/index.php");
+            header("Location: admin/index");
             exit;
         case 'medecin':
-            header("Location: medecin/index.php");
+            header("Location: medecin/index");
             exit;
         case 'infirmier':
-            header("Location: infirmier/index.php");
+            header("Location: infirmier/index");
             exit;
         case 'aide-soignant':
-            header("Location: aide-soignant/index.php");
+            header("Location: aide-soignant/index");
             exit;
         case 'secretaire':
-            header("Location: secretaire/index.php");
+            header("Location: secretaire/index");
             exit;
         default:
-            header("Location: autre/index.php");
+            header("Location: autre/index");
             exit;
     }
 }
@@ -87,22 +87,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     // Redirection en fonction du rôle
                     switch ($user['role']) {
                         case 'admin':
-                            header("Location: admin/index.php");
+                            header("Location: admin/index");
                             exit;
                         case 'medecin':
-                            header("Location: medecin/index.php");
+                            header("Location: medecin/index");
                             exit;
                         case 'infirmier':
-                            header("Location: infirmier/index.php");
+                            header("Location: infirmier/index");
                             exit;
                         case 'aide-soignant':
-                            header("Location: aide-soignant/index.php");
+                            header("Location: aide-soignant/index");
                             exit;
                         case 'secretaire':
-                            header("Location: secretaire/index.php");
+                            header("Location: secretaire/index");
                             exit;
                         default:
-                            header("Location: autre/index.php");
+                            header("Location: autre/index");
                             exit;
                     }
                 } else {
@@ -152,7 +152,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <?php endif; ?>
 
     <!-- Formulaire de connexion -->
-    <form method="POST" action="login.php">
+    <form method="POST" action="login">
         <div class="form-group">
             <label for="email">Adresse e-mail</label>
             <input type="email" name="email" class="form-control" id="email" placeholder="Entrez votre adresse e-mail" required>
